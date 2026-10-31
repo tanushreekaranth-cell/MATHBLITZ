@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MathBlitz: A Timed Mental Math Challenge</title>
+  <meta name="description" content="A fast-paced, responsive mental math challenge featuring 12 Medium-level question categories, streak multipliers, practice mode, and detailed performance reviews.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Background ambient glow shapes -->
+  <div class="ambient-glow glow-1" aria-hidden="true"></div>
+  <div class="ambient-glow glow-2" aria-hidden="true"></div>
+
+  <!-- Main Container -->
+  <div class="app-container">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="header-brand" id="brand-home-btn" role="button" tabindex="0" title="Return to home screen">
+        <span class="brand-icon">⚡</span>
+        <div class="brand-text">
+          <h1 class="brand-title">MATH<span>BLITZ</span></h1>
+          <p class="brand-subtitle">Timed Mental Math Challenge</p>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button id="sound-toggle-btn" class="icon-btn" title="Toggle Sound" aria-label="Toggle Sound">
+          <span class="icon" id="sound-icon">🔊</span>
+        </button>
+        <button id="leaderboard-btn" class="icon-btn" title="High Scores" aria-label="High Scores">
+          <span class="icon">🏆</span>
+          <span class="btn-label">Scores</span>
+        </button>
+        <button id="help-btn" class="icon-btn" title="How to Play" aria-label="How to Play">
+          <span class="icon">ℹ️</span>
+          <span class="btn-label">Rules</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- MAIN SCREENS CONTAINER -->
+    <main class="main-content">
+
+      <!-- SCREEN 1: HOME / MENU -->
+      <section id="screen-home" class="screen active">
+        <!-- Hero Tagline -->
+        <div class="hero-banner">
+          <div class="hero-tag">Medium Challenge Edition</div>
+          <h2 class="hero-heading">Sharpen Your Mind at Blitz Speed</h2>
+          <p class="hero-description">
+            Test your mental arithmetic across 12 rigorous categories. Build streaks, conquer the clock, and master mathematical shortcuts!
+          </p>
+        </div>
+
+        <!-- Mode Selection Tabs -->
+        <div class="mode-selector-card">
+          <div class="mode-tabs" role="tablist">
+            <button class="mode-tab active" id="tab-mixed" role="tab" aria-selected="true" data-mode="mixed">
+              <span class="tab-icon">⚡</span>
+              <div class="tab-info">
+                <strong>Mixed Challenge</strong>
+                <span>Random mix from all 12 categories</span>
+              </div>
+            </button>
+            <button class="mode-tab" id="tab-practice" role="tab" aria-selected="false" data-mode="practice">
+              <span class="tab-icon">🎯</span>
+              <div class="tab-info">
+                <strong>Practice Mode</strong>
+                <span>Pick individual categories to master</span>
+              </div>
+            </button>
+          </div>
+
+          <!-- Mode Configuration Body -->
+          <div class="mode-config-body">
+            
+            <!-- Difficulty Selector (Prominently features Medium) -->
+            <div class="config-row">
+              <div class="config-label-group">
+                <label class="config-label">Difficulty Level</label>
+                <span class="config-sublabel">Featured: Medium with rich mental math patterns</span>
+              </div>
+              <div class="difficulty-toggle" role="radiogroup">
+                <button type="button" class="diff-btn" data-diff="easy" role="radio" aria-checked="false">Easy</button>
+                <button type="button" class="diff-btn active" data-diff="medium" role="radio" aria-checked="true">
+                  <span>Medium</span>
+                  <span class="badge-recommended">Recommended</span>
+                </button>
+                <button type="button" class="diff-btn" data-diff="hard" role="radio" aria-checked="false">Hard</button>
+              </div>
+            </div>
+
+            <!-- Mixed Blitz Settings -->
+            <div id="mixed-settings" class="config-section">
+              <div class="config-row">
+                <div class="config-label-group">
+                  <label class="config-label">Round Duration</label>
+                  <span class="config-sublabel">Answer as many as you can before time expires</span>
+                </div>
+                <div class="pill-group" id="mixed-timer-pills">
+                  <button type="button" class="pill-btn" data-time="60">60s (Blitz)</button>
+                  <button type="button" class="pill-btn active" data-time="90">90s (Standard)</button>
+                  <button type="button" class="pill-btn" data-time="120">120s (Endurance)</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Practice Mode Settings -->
+            <div id="practice-settings" class="config-section hidden">
+              <!-- Practice Format (Timed vs Untimed) -->
+              <div class="config-row">
+                <div class="config-label-group">
+                  <label class="config-label">Practice Style</label>
+                  <span class="config-sublabel">Choose a timed run or untimed study</span>
+                </div>
+                <div class="pill-group" id="practice-style-pills">
+                  <button type="button" class="pill-btn active" data-style="timed" data-time="90">Timed (90s)</button>
+                  <button type="button" class="pill-btn" data-style="untimed" data-count="15">Untimed (15 Qs)</button>
+                  <button type="button" class="pill-btn" data-style="untimed" data-count="30">Untimed (30 Qs)</button>
+                </div>
+              </div>
+
+              <!-- Category Selection Grid -->
+              <div class="config-row categories-config">
+                <div class="category-header-row">
+                  <div>
+                    <label class="config-label">Select Categories</label>
+                    <span class="config-sublabel" id="category-selection-count">All 12 categories selected</span>
+                  </div>
+                  <div class="category-quick-actions">
+                    <button type="button" id="select-all-cats-btn" class="text-action-btn">Select All</button>
+                    <button type="button" id="clear-all-cats-btn" class="text-action-btn">Clear</button>
+                  </div>
+                </div>
+
+                <div class="category-grid" id="category-grid">
+                  <!-- Generated by JS: 12 Category Cards -->
+                </div>
+              </div>
+            </div>
+
+            <!-- Start Action CTA -->
+            <div class="start-action-container">
+              <button id="start-game-btn" class="primary-cta-btn">
+                <span class="cta-icon">⚡</span>
+                <span class="cta-text">Start Mixed Challenge</span>
+                <span class="cta-arrow">→</span>
+              </button>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Quick Best Score Preview -->
+        <div class="quick-stats-bar" id="quick-stats-bar">
+          <div class="quick-stat-item">
+            <span class="stat-icon">👑</span>
+            <div class="stat-content">
+              <span class="stat-name">Personal Best</span>
+              <strong class="stat-value" id="quick-best-score">0 pts</strong>
+            </div>
+          </div>
+          <div class="quick-stat-item">
+            <span class="stat-icon">🔥</span>
+            <div class="stat-content">
+              <span class="stat-name">Top Streak</span>
+              <strong class="stat-value" id="quick-best-streak">0</strong>
+            </div>
+          </div>
+          <div class="quick-stat-item">
+            <span class="stat-icon">🎯</span>
+            <div class="stat-content">
+              <span class="stat-name">Best Accuracy</span>
+              <strong class="stat-value" id="quick-best-accuracy">--%</strong>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SCREEN 2: ACTIVE GAMEPLAY -->
+      <section id="screen-game" class="screen">
+        <!-- Top Game HUD -->
+        <div class="game-hud">
+          <!-- Exit Button -->
+          <button id="quit-game-btn" class="hud-btn" title="Leave Challenge" aria-label="Quit Challenge">
+            <span class="hud-icon">✕</span>
+            <span class="hud-text">Exit</span>
+          </button>
+
+          <!-- Timer Bar & Display -->
+          <div class="hud-timer-container" id="hud-timer-container">
+            <div class="timer-pill" id="timer-pill">
+              <span class="timer-icon">⏳</span>
+              <span class="timer-digits" id="timer-display">90</span>
+              <span class="timer-unit" id="timer-unit">s</span>
+            </div>
+            <div class="timer-progress-track">
+              <div class="timer-progress-bar" id="timer-bar"></div>
+            </div>
+          </div>
+
+          <!-- Streak Multiplier Indicator -->
+          <div class="hud-streak-container" id="hud-streak-container">
+            <div class="streak-pill" id="streak-pill">
+              <span class="streak-icon">🔥</span>
+              <span class="streak-count" id="streak-display">0</span>
+            </div>
+            <div class="multiplier-badge" id="multiplier-badge">1.0x</div>
+          </div>
+
+          <!-- Score Display -->
+          <div class="hud-score-container">
+            <span class="score-label">Score</span>
+            <span class="score-value" id="score-display">0</span>
+            <div class="score-popup" id="score-popup" aria-hidden="true">+100</div>
+          </div>
+        </div>
+
+        <!-- Question Card -->
+        <div class="question-card" id="question-card">
+          <!-- Question Meta Header -->
+          <div class="question-meta">
+            <span class="category-pill" id="question-category-pill">
+              <span class="cat-icon" id="question-category-icon">🧩</span>
+              <span class="cat-name" id="question-category-name">Number Theory</span>
+            </span>
+            <span class="question-counter" id="question-counter">Question 1</span>
+            <span class="diff-indicator" id="question-diff-badge">Medium</span>
+          </div>
+
+          <!-- Question Body -->
+          <div class="question-body">
+            <h2 class="question-text" id="question-text">Loading question...</h2>
+          </div>
+
+          <!-- Practice Hint Toggle (Available in practice mode) -->
+          <div class="practice-hint-wrap hidden" id="practice-hint-wrap">
+            <button type="button" class="hint-toggle-btn" id="hint-toggle-btn">
+              💡 Show Math Tip
+            </button>
+            <div class="hint-content hidden" id="hint-content"></div>
+          </div>
+
+          <!-- Multiple Choice Options Grid (4 Options) -->
+          <div class="options-grid" id="options-grid" role="group" aria-label="Multiple choice options">
+            <!-- 4 Option Buttons rendered via JavaScript -->
+          </div>
+
+          <!-- Live Feedback Banner -->
+          <div class="feedback-banner" id="feedback-banner" aria-live="polite">
+            <span class="feedback-icon" id="feedback-icon">✓</span>
+            <div class="feedback-text">
+              <strong id="feedback-headline">Correct!</strong>
+              <span id="feedback-sub">+100 points • 2x Streak Bonus</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Keyboard Shortcuts Hint Footer -->
+        <div class="keyboard-hints">
+          <span class="hint-pill"><kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd> <kbd>4</kbd> or <kbd>A</kbd> <kbd>B</kbd> <kbd>C</kbd> <kbd>D</kbd> to select</span>
+          <span class="hint-pill"><kbd>Esc</kbd> to exit</span>
+        </div>
+      </section>
+
+      <!-- SCREEN 3: RESULTS & GAME OVER -->
+      <section id="screen-results" class="screen">
+        <div class="results-card">
+          <!-- Header / Status Banner -->
+          <div class="results-header">
+            <div class="results-trophy" id="results-trophy">⚡</div>
+            <div class="new-highscore-badge hidden" id="new-highscore-badge">
+              🌟 NEW HIGH SCORE! 🌟
+            </div>
+            <h2 class="results-title" id="results-title">Challenge Completed!</h2>
+            <p class="results-subtitle" id="results-subtitle">Here is how you performed:</p>
+          </div>
+
+          <!-- Hero Metrics Grid -->
+          <div class="metrics-grid">
+            <div class="metric-box hero-metric">
+              <span class="metric-label">Final Score</span>
+              <strong class="metric-value highlight" id="res-score">0</strong>
+              <span class="metric-sub" id="res-score-sub">Points</span>
+            </div>
+            <div class="metric-box">
+              <span class="metric-label">Accuracy</span>
+              <strong class="metric-value" id="res-accuracy">0%</strong>
+              <span class="metric-sub" id="res-accuracy-ratio">0 / 0 correct</span>
+            </div>
+            <div class="metric-box">
+              <span class="metric-label">Max Streak</span>
+              <strong class="metric-value" id="res-max-streak">0</strong>
+              <span class="metric-sub">Consecutive answers</span>
+            </div>
+            <div class="metric-box">
+              <span class="metric-label">Avg Pace</span>
+              <strong class="metric-value" id="res-avg-time">0.0s</strong>
+              <span class="metric-sub">Per question</span>
+            </div>
+          </div>
+
+          <!-- Category Performance Breakdown -->
+          <div class="category-breakdown-card">
+            <h3 class="section-heading">Category Performance</h3>
+            <div class="breakdown-list" id="category-breakdown-list">
+              <!-- Rendered via JS -->
+            </div>
+          </div>
+
+          <!-- Step-by-Step Question Review -->
+          <div class="question-review-card">
+            <div class="review-header">
+              <h3 class="section-heading">Question Review &amp; Explanations</h3>
+              <span class="review-count" id="review-count">0 questions</span>
+            </div>
+            <div class="review-list" id="review-list">
+              <!-- Rendered via JS -->
+            </div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="results-actions">
+            <button id="play-again-btn" class="primary-cta-btn">
+              <span class="cta-icon">🔄</span>
+              <span class="cta-text">Play Again</span>
+            </button>
+            <button id="change-mode-btn" class="secondary-btn">
+              <span class="btn-icon">🏠</span>
+              <span>Menu &amp; Modes</span>
+            </button>
+            <button id="view-leaderboard-btn" class="secondary-btn">
+              <span class="btn-icon">🏆</span>
+              <span>Leaderboard</span>
+            </button>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- MODAL: LEADERBOARD / HIGH SCORES -->
+  <div class="modal-overlay hidden" id="leaderboard-modal" role="dialog" aria-modal="true" aria-labelledby="leaderboard-title">
+    <div class="modal-box">
+      <div class="modal-header">
+        <div class="modal-title-wrap">
+          <span class="modal-icon">🏆</span>
+          <h2 id="leaderboard-title">High Scores &amp; Records</h2>
+        </div>
+        <button class="modal-close-btn" id="close-leaderboard-btn" aria-label="Close modal">✕</button>
+      </div>
+      <div class="modal-body">
+        <!-- Leaderboard Filter Tabs -->
+        <div class="sub-tabs">
+          <button class="sub-tab active" data-filter="all">All Modes</button>
+          <button class="sub-tab" data-filter="mixed">Mixed Challenge</button>
+          <button class="sub-tab" data-filter="practice">Practice</button>
+        </div>
+
+        <div class="table-container">
+          <table class="scores-table" id="scores-table">
+            <thead>
+              <tr>
+                <th>Rank</th>
+                <th>Mode</th>
+                <th>Difficulty</th>
+                <th>Score</th>
+                <th>Accuracy</th>
+                <th>Date</th>
+              </tr>
+            </thead>
+            <tbody id="scores-tbody">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+          <div class="empty-state hidden" id="scores-empty-state">
+            <span class="empty-icon">🎮</span>
+            <p>No high scores yet! Complete a challenge to set your first record.</p>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button id="clear-scores-btn" class="danger-btn">Clear All Records</button>
+        <button class="modal-primary-btn" id="done-leaderboard-btn">Done</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: HOW TO PLAY / RULES -->
+  <div class="modal-overlay hidden" id="help-modal" role="dialog" aria-modal="true" aria-labelledby="help-title">
+    <div class="modal-box">
+      <div class="modal-header">
+        <div class="modal-title-wrap">
+          <span class="modal-icon">ℹ️</span>
+          <h2 id="help-title">How to Play MathBlitz</h2>
+        </div>
+        <button class="modal-close-btn" id="close-help-btn" aria-label="Close modal">✕</button>
+      </div>
+      <div class="modal-body help-body">
+        
+        <div class="help-section">
+          <h3>⚡ Scoring &amp; Streaks</h3>
+          <p>Each correct answer awards <strong>100 base points</strong>. Consecutive correct answers build your <strong>Streak Multiplier</strong>:</p>
+          <div class="streak-tiers-grid">
+            <div class="tier-card"><span class="tier-flame">🔥 1-2</span> <strong>1.0x</strong> Multiplier</div>
+            <div class="tier-card"><span class="tier-flame">🔥 3-4</span> <strong>1.5x</strong> Multiplier</div>
+            <div class="tier-card"><span class="tier-flame">🔥 5-6</span> <strong>2.0x</strong> Multiplier</div>
+            <div class="tier-card"><span class="tier-flame">🔥 7+</span> <strong>3.0x</strong> Multiplier</div>
+          </div>
+          <p class="help-tip">Answering quickly also grants up to <strong>+50 speed bonus</strong> points!</p>
+        </div>
+
+        <div class="help-section">
+          <h3>🎯 The 12 Medium Question Categories</h3>
+          <div class="help-cat-list">
+            <div class="help-cat-item"><strong>1. Number Theory:</strong> Primes, tricky composites, divisibility tests, and factor counts.</div>
+            <div class="help-cat-item"><strong>2. Powers &amp; Exponents:</strong> Base arithmetic, power laws, and evaluating expressions.</div>
+            <div class="help-cat-item"><strong>3. Missing Number in Equations:</strong> Solving for unknown terms in arithmetic equations.</div>
+            <div class="help-cat-item"><strong>4. Addition:</strong> Multi-digit and multi-term mental addition with carries.</div>
+            <div class="help-cat-item"><strong>5. HCF (GCD):</strong> Finding the greatest common divisor of positive integers.</div>
+            <div class="help-cat-item"><strong>6. LCM:</strong> Calculating lowest common multiples within mental math range.</div>
+            <div class="help-cat-item"><strong>7. Fractions:</strong> Addition, subtraction, multiplication, and reducing to lowest terms.</div>
+            <div class="help-cat-item"><strong>8. Missing Number in Series:</strong> Identifying arithmetic, geometric, and quadratic sequence rules.</div>
+            <div class="help-cat-item"><strong>9. Square Numbers:</strong> 2-digit squares, square roots, and consecutive square differences.</div>
+            <div class="help-cat-item"><strong>10. Calendar and Days:</strong> Modulo 7 day calculations, past/future dates, and day offsets.</div>
+            <div class="help-cat-item"><strong>11. Decimal Addition &amp; Subtraction:</strong> Precise decimal calculations with alignment.</div>
+            <div class="help-cat-item"><strong>12. Decimal Multiplication &amp; Division:</strong> Decimal place value shifts and mental division.</div>
+          </div>
+        </div>
+
+        <div class="help-section">
+          <h3>⌨️ Keyboard Shortcuts</h3>
+          <p>Speed up your mental math using quick keys:</p>
+          <ul class="keyboard-list">
+            <li><kbd>1</kbd> or <kbd>A</kbd> — Option 1</li>
+            <li><kbd>2</kbd> or <kbd>B</kbd> — Option 2</li>
+            <li><kbd>3</kbd> or <kbd>C</kbd> — Option 3</li>
+            <li><kbd>4</kbd> or <kbd>D</kbd> — Option 4</li>
+            <li><kbd>Esc</kbd> — Exit to menu</li>
+          </ul>
+        </div>
+
+      </div>
+      <div class="modal-footer">
+        <button class="modal-primary-btn" id="done-help-btn">Got It, Let's Play!</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONFIRM EXIT MODAL -->
+  <div class="modal-overlay hidden" id="exit-modal" role="dialog" aria-modal="true">
+    <div class="modal-box modal-small">
+      <div class="modal-header">
+        <h3 class="modal-title">Quit Challenge?</h3>
+        <button class="modal-close-btn" id="cancel-exit-x-btn">✕</button>
+      </div>
+      <div class="modal-body">
+        <p>Your current streak and round progress will be lost. Are you sure you want to return to the menu?</p>
+      </div>
+      <div class="modal-footer">
+        <button id="cancel-exit-btn" class="secondary-btn">Resume</button>
+        <button id="confirm-exit-btn" class="danger-btn">Quit Challenge</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main JavaScript File -->
+  <script src="app.js"></script>
+</body>
+</html>
